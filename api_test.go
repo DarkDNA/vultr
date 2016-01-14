@@ -1,24 +1,28 @@
-package vultr 
+package vultr
+
 import (
 	"github.com/pearkes/digitalocean/testutil"
-  "testing"
+	"testing"
 )
-import 	. "github.com/motain/gocheck"
+import . "github.com/motain/gocheck"
+
 type S struct {
 	client *Client
 }
+
 func makeResp(body string) testutil.Response {
-  resp := testutil.Response{}
-  resp.Status = 200
-  resp.Headers = make(map[string]string)
-  resp.Headers["Content-type"] = "application/json"
-  resp.Body = body
-  return resp
+	resp := testutil.Response{}
+	resp.Status = 200
+	resp.Headers = make(map[string]string)
+	resp.Headers["Content-type"] = "application/json"
+	resp.Body = body
+	return resp
 }
+
 var _ = Suite(&S{})
 var testServer = testutil.NewHTTPServer()
-var paramResponses = testutil.ResponseMap {
-  "/v1/os/list" : makeResp(`{
+var paramResponses = testutil.ResponseMap{
+	"/v1/os/list": makeResp(`{
         "127": {
             "OSID": "127",
             "name": "CentOS 6 x64",
@@ -34,7 +38,7 @@ var paramResponses = testutil.ResponseMap {
             "windows": false
         }
     }`),
-  "/v1/plans/list": makeResp(`{
+	"/v1/plans/list": makeResp(`{
       "1": {
           "VPSPLANID": "1",
           "name": "Starter",
@@ -56,7 +60,7 @@ var paramResponses = testutil.ResponseMap {
           "windows": false
       }
   }`),
-  "/v1/regions/list": makeResp(`{
+	"/v1/regions/list": makeResp(`{
         "1": {
             "DCID": "1",
             "name": "New Jersey",
@@ -72,7 +76,7 @@ var paramResponses = testutil.ResponseMap {
             "state": "IL"
         }
     }`),
-  "/v1/snapshot/list": makeResp(`{
+	"/v1/snapshot/list": makeResp(`{
       "5359435d28b9a": {
           "SNAPSHOTID": "5359435d28b9a",
           "date_created": "2014-04-18 12:40:40",
@@ -89,6 +93,7 @@ var paramResponses = testutil.ResponseMap {
       }
   }`),
 }
+
 func TestServer(t *testing.T) {
 	TestingT(t)
 }
@@ -99,12 +104,12 @@ func (s *S) SetUpSuite(c *C) {
 	if err != nil {
 		panic(err)
 	}
-  s.client.URL = "http://localhost:4444/v1"
-  // configure test server to send parameters
-  testServer.ResponseMap(4,paramResponses)
-  err = s.client.initParams()
-  testServer.WaitRequests(4)
-  // pull the 4 requests out so they don't mess up other stuff
+	s.client.URL = "http://localhost:4444/v1"
+	// configure test server to send parameters
+	testServer.ResponseMap(4, paramResponses)
+	err = s.client.initParams()
+	testServer.WaitRequests(4)
+	// pull the 4 requests out so they don't mess up other stuff
 	if err != nil {
 		panic(err)
 	}
